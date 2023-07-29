@@ -9,5 +9,4 @@ else:
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 RAPID_API_KEY = os.getenv("RAPID_API_KEY")
 DEFAULT_COMMANDS = (
-    ("start", "Запустить бота"),
 )
