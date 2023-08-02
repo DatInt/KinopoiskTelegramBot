@@ -1,7 +1,6 @@
-from loader import bot
-import handlers  # noqa
-from utils.set_bot_commands import set_default_commands
+from loader import bot, dp
+import handlers
+from aiogram.utils import executor
 
 if __name__ == "__main__":
-    set_default_commands(bot)
-    bot.infinity_polling()
+    executor.start_polling(dp)
