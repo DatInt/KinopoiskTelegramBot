@@ -2,6 +2,7 @@ from aiogram import types
 from config_data.config import API_KEY
 from loader import dp
 import requests
+from keyboards.inline.random_button import keyboard
 
 @dp.message_handler(commands=['random'])
 async def random_movie_command(message: types.Message):
@@ -28,6 +29,14 @@ async def random_movie_command(message: types.Message):
 			f'Страны: {", ".join(countries)}\n'
 			f'\n{description[:350]+"..."}\n'
 			f'\n{link}')
-		await message.answer_photo(poster, caption=movie_descr)
+		await message.answer_photo(poster, caption=movie_descr, reply_markup=keyboard)
 	except:
-		await message.reply('Something went wrong. Try again in a while.')
+		await message.answer('Что-то пошло не так, попробуйте снова позже')
+
+@dp.callback_query_handler(lambda c: c.data == 'refresh')
+async def process_callback_button(callback_query: types.CallbackQuery):
+	'''
+	Хендлер для обработки нажатия кнопки поиска другого фильма.
+	'''
+	await random_movie_command(callback_query.message)
+
