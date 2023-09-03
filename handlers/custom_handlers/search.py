@@ -5,6 +5,7 @@ from aiogram.dispatcher import FSMContext
 from states.states import Search
 import requests
 from keyboards.inline.search_again import keyboard
+from database.database import User, Movies
 
 
 @dp.message_handler(commands=['search'], state=None)
@@ -23,12 +24,9 @@ async def search_movies_list_by_name(message: types.Message, state: FSMContext):
 	"""
 	try:
 		movie_name = message.text
-		request = requests.get(f'https://api.kinopoisk.dev/v1.3/movie?name={movie_name}',
-													 headers={'X-API-KEY': API_KEY})
-		print(f'https://api.kinopoisk.dev/v1.3/movie?name={movie_name}')
+		request = requests.get(f'https://api.kinopoisk.dev/v1.3/movie?name={movie_name}', headers={'X-API-KEY': API_KEY})
 		data = request.json()
 		movies_list = data['docs']
-		print(movies_list)
 		await message.answer(f'Найдено результатов: {len(movies_list)}')
 		if movies_list:
 			for movie in movies_list:
@@ -60,6 +58,17 @@ async def search_movies_list_by_name(message: types.Message, state: FSMContext):
 					f'Страны: {", ".join(countries)}\n'
 					f'\n{description[:350] + "..."}\n'
 					f'\n{link}')
+				try:
+					user_id = message.from_user.id
+					username = message.from_user.username
+					try:
+						user = User.create(user_id=user_id, username=username)
+						Movies.create(user=user, link=link, movie_name=name, year=year, category='search')
+					except:
+						user = User.get(User.user_id == user_id)
+						Movies.create(user=user, link=link, movie_name=name, year=year, category='search')
+				except Exception as Ex:
+					print(Ex)
 				await message.answer_photo(poster, caption=movie_descr)
 				await state.finish()
 		else:

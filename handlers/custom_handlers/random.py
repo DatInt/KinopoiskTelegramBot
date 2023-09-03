@@ -5,11 +5,11 @@ import requests
 from keyboards.inline.random_button import keyboard
 from loader import dp, bot
 from aiogram.dispatcher.filters.state import StatesGroup, State
-from database.database import User
+from database.database import User, Movies
 
 
 @dp.message_handler(commands=['random'])
-async def random_movie_command(message: types.Message, *args):
+async def random_movie_command(message: types.Message, *callback_user_data):
 	"""
 	Хендлер для поиска случайного фильма в базе кинопоиска
 	"""
@@ -37,15 +37,18 @@ async def random_movie_command(message: types.Message, *args):
 			f'\n{description[:350] + "..."}\n'
 			f'\n{link}')
 		try:
-			if callback_user_id:
-				user_id = callback_user_id
+			if callback_user_data:
+				user_id = callback_user_data[0]
+				username = callback_user_data[1]
 			else:
 				user_id = message.from_user.id
-			if callback_username:
-				username = callback_username
-			else:
 				username = message.from_user.username
-			User.create(user_id=user_id, username=username, link=link, movie_name=name, year=year)
+			try:
+				user = User.create(user_id=user_id, username=username)
+				Movies.create(user=user, link=link, movie_name=name, year=year, category='random')
+			except:
+				user = User.get(User.user_id == user_id)
+				Movies.create(user=user, link=link, movie_name=name, year=year, category='random')
 		except Exception as Ex:
 			print(Ex)
 		await message.answer_photo(poster, caption=movie_descr, reply_markup=keyboard)
@@ -58,9 +61,6 @@ async def process_callback_button(callback_query: types.CallbackQuery):
 	"""
 	Хендлер для обработки нажатия кнопки поиска другого фильма.
 	"""
-	print(callback_query.from_user.username)
 	callback_user_id = callback_query.from_user.id
 	callback_username = callback_query.from_user.username
 	await random_movie_command(callback_query.message, callback_user_id, callback_username)
-
-

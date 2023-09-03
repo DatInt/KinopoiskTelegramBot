@@ -16,3 +16,9 @@ class SearchData(StatesGroup):
 	genre = State()
 	country = State()
 	name = State()
+
+class SearchHistory(StatesGroup):
+	"""
+	Состояния для хендлера history
+	"""
+	category = State()

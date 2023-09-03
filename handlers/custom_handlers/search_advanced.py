@@ -6,7 +6,7 @@ import requests
 from keyboards.inline.adv_search_again import keyboard
 from keyboards.reply.genres_btn import genres_kb
 from states.states import SearchData
-
+from database.database import User, Movies
 
 
 @dp.message_handler(commands=['adv_search'])
@@ -64,13 +64,12 @@ async def process_name(message: types.Message, state: FSMContext):
 		async with state.proxy() as data:
 			data['name'] = message.text
 		await state.finish()
-	
+
 		search_data = {'year': data['year'],
 									 'genre': data['genre'],
 									 'country': data['country'],
 									 'name': data['name']
 									 }
-		print(search_data)
 		name = year = genre = country = ''
 		if search_data['year'] != '*':
 			year = f'&year={data["year"]}'
@@ -80,13 +79,10 @@ async def process_name(message: types.Message, state: FSMContext):
 			country = f'&countries.name={data["country"]}'
 		if search_data['name'] != '*':
 			name = f'&name={data["name"]}'
-	
-		print(f"https://api.kinopoisk.dev/v1.3/movie?page=1&limit=10{name}{year}{genre}{country}")
 		request = requests.get(f"https://api.kinopoisk.dev/v1.3/movie?page=1&limit=10{name}{year}{genre}{country}",
 													 headers={'X-API-KEY': API_KEY})
 		movies_data = request.json()
 		movies_list = movies_data['docs']
-		print(movies_list)
 		await message.answer(f'Найдено результатов: {len(movies_list)}')
 		if movies_list:
 			for movie in movies_list:
@@ -118,6 +114,17 @@ async def process_name(message: types.Message, state: FSMContext):
 					f'Страны: {", ".join(countries)}\n'
 					f'\n{description[:350] + "..."}\n'
 					f'\n{link}')
+				try:
+					user_id = message.from_user.id
+					username = message.from_user.username
+					try:
+						user = User.create(user_id=user_id, username=username)
+						Movies.create(user=user, link=link, movie_name=name, year=year, category='adv_search')
+					except:
+						user = User.get(User.user_id == user_id)
+						Movies.create(user=user, link=link, movie_name=name, year=year, category='adv_search')
+				except Exception as Ex:
+					print(Ex)
 				await message.answer_photo(poster, caption=movie_descr)
 				await state.finish()
 		else:
@@ -125,6 +132,7 @@ async def process_name(message: types.Message, state: FSMContext):
 		await message.answer(text='Не нашли что искали? Повторите поиск', reply_markup=keyboard)
 	except:
 		await message.answer('Что-то пошло не так, повторите попытку позже')
+
 
 @dp.callback_query_handler(lambda c: c.data == 'adv_re_search', state=None)
 async def process_callback_button(message: types.Message):
