@@ -12,9 +12,9 @@ async def hello_replier(message: types.Message, state: FSMContext):
 		await message.answer_sticker(r'CAACAgIAAxkBAAK5aWTWT6ZcBXvoP1C6wbRiLTMNhAbbAAL_EAAClzRAS6QnUKReEydIMAQ')
 		await message.answer(
 			f'Привет, {message.from_user.first_name}👋! Для начала работы с ботом открой меню и выбери команду или введи /help для получения списка команд.')
-		await state.finish()
+		await state.set_state()
 	else:
 		await message.answer_sticker(r'CAACAgIAAxkBAAK5c2TWUtTcRTRgKxbuWvZrSK3-HHiwAALkEgACOHUAAUoE0LZNVG4hoDAE')
 		await message.answer(
 			'Не понимаю вас. Для начала работы с ботом пожалуйста откройте меню и выберите команду или введите /help для получения списка комманд.')
-		await state.finish()
+		await state.set_state()
