@@ -11,7 +11,7 @@ class MovieData:
     countries: list
     link: str
     description: str
-    poster: str | None
+    poster: str
 
     @classmethod
     def from_dict(cls, movie: dict):
