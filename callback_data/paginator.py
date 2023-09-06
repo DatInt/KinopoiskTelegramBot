@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import StrEnum
-from typing import Sequence, Callable, Any, TypeVar, Self
+from enum import Enum
+from typing import Sequence, Callable, Any, TypeVar
 
 from aiogram.types import InlineKeyboardButton as IKButton, InlineKeyboardMarkup
 from aiogram.utils.callback_data import CallbackData
@@ -12,7 +12,7 @@ T = TypeVar("T")
 paginator_query = CallbackData('pagi', 'offset', 'limit', 'sort_order', 'data')
 
 
-class SortOrder(StrEnum):
+class SortOrder(str, Enum):
     ASC = "asc"
     DESC = "desc"
 
@@ -28,20 +28,20 @@ class PaginatorCallback:
         self.offset = int(self.offset)
         self.limit = int(self.limit)
 
-    def make(self, offset: int) -> Self:
+    def make(self, offset: int) -> PaginatorCallback:
         return PaginatorCallback(
             offset=offset,
             limit=self.limit,
             sort_order=self.sort_order
         )
 
-    def next(self) -> Self:
+    def next(self) -> PaginatorCallback:
         return self.make(self.offset + self.limit)
 
-    def prev(self) -> Self:
+    def prev(self) -> PaginatorCallback:
         return self.make(self.offset - self.limit)
 
-    def switch_to(self, page: int) -> Self:
+    def switch_to(self, page: int) -> PaginatorCallback:
         """
          Switch to page.
          Fist page is 0
@@ -50,10 +50,10 @@ class PaginatorCallback:
         """
         return self.make(page * self.limit)
 
-    def switch_to_last(self, length: int) -> Self:
+    def switch_to_last(self, length: int) -> PaginatorCallback:
         return self.switch_to(length // self.limit)
 
-    def switch_to_first(self) -> Self:
+    def switch_to_first(self) -> PaginatorCallback:
         return self.switch_to(0)
 
     def has_prev(self, page: int = 0) -> bool:
