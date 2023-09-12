@@ -49,10 +49,11 @@ async def random_movie_command(message: types.Message, *callback_user_data):
 			except:
 				user = User.get(User.user_id == user_id)
 				Movies.create(user=user, link=link, movie_name=name, year=year, category='random')
-		except Exception as Ex:
-			print(Ex)
+		except:
+			pass
 		await message.answer_photo(poster, caption=movie_descr, reply_markup=keyboard)
-	except:
+	except Exeption as Ex:
+		logging.error(Ex, exc_info=True)
 		await message.answer('Что-то пошло не так, попробуйте снова позже')
 
 

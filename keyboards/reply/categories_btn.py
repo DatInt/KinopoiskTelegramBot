@@ -1,5 +1,4 @@
-from aiogram.types import ReplyKeyboardRemove, \
-	ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 random_btn = KeyboardButton('Случайные фильмы')
 search_btn = KeyboardButton('Поиск')

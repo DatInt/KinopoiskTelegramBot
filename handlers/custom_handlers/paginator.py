@@ -17,26 +17,26 @@ PgProducer = Callable[[Sequence, PaginatorCallback], str]
 
 @dp.callback_query_handler(paginator_query.filter())
 async def paginator(
-        call: types.CallbackQuery,
-        callback_data: dict,
-        state: FSMContext
+		call: types.CallbackQuery,
+		callback_data: dict,
+		state: FSMContext
 ):
-    callback_data.pop("@")
-    data = await state.get_data()
-    pg_data: Sequence = data.get("pg_data")
-    pg_consumer: PgConsumer = data.get("pg_consumer")
-    await state.update_data(pg=callback_data)
-    paginator_cb = PaginatorCallback(**callback_data)
-    try:
-        if paginator_cb.data == "search":
-            movie: MovieData = paginator_cb.slice_first(pg_data)
-            await call.message.edit_media(
-                InputMediaPhoto(
-                    movie.get_poster(),
-                    caption=movie.get_description(),
-                ),
-                reply_markup=pg_consumer(pg_data, paginator_cb)
-            )
+	callback_data.pop("@")
+	data = await state.get_data()
+	pg_data: Sequence = data.get("pg_data")
+	pg_consumer: PgConsumer = data.get("pg_consumer")
+	await state.update_data(pg=callback_data)
+	paginator_cb = PaginatorCallback(**callback_data)
+	try:
+		if paginator_cb.data == "search":
+			movie: MovieData = paginator_cb.slice_first(pg_data)
+			await call.message.edit_media(
+				InputMediaPhoto(
+					movie.get_poster(),
+					caption=movie.get_description(),
+				),
+				reply_markup=pg_consumer(pg_data, paginator_cb)
+			)
 
-    except exceptions.MessageNotModified as e:
-        await call.answer('Сортировка не изменена')
+	except exceptions.MessageNotModified:
+		logging.error(Ex, exc_info=True)

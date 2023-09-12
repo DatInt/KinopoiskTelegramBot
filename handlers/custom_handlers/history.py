@@ -5,6 +5,7 @@ from keyboards.reply.categories_btn import categories_kb
 from states.states import SearchHistory
 from aiogram.dispatcher import FSMContext
 from keyboards.inline.delete_history import keyboard
+from database.controllers import category_search, delete_history
 
 
 @dp.message_handler(commands=['history'])
@@ -37,7 +38,7 @@ async def random_movie_command(message: types.Message, state: FSMContext):
 		else:
 			await message.answer('Такой категории не существует.')
 	user_id = message.from_user.id
-	for movie in Movies.select().where(Movies.category == category, Movies.user == user_id):
+	for movie in category_search(category, user_id):
 		link = f'<a href="{movie.link}">{movie.movie_name}({movie.year})</a>'
 		links += link + '\n'
 	await message.answer(links, parse_mode='html', disable_web_page_preview=True, reply_markup=keyboard)
@@ -49,6 +50,6 @@ async def process_callback_button(callback_query: types.CallbackQuery):
 	Хендлер обрабатывающий нажатие кнопки удаления истории
 	"""
 	callback_user_id = callback_query.from_user.id
-	for movie in Movies.select().where(Movies.user == callback_user_id):
+	for movie in delete_history(callback_user_id):
 		movie.delete_instance()
 	await bot.send_message(callback_query.from_user.id, 'История очищена!')
