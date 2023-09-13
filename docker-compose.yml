@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  telegram-bot:
+    container_name: bot
+    working_dir: /bot
+    restart: always
+    build:
+        context: .
+        dockerfile: Dockerfile
+    command: sh -c "python main.py"

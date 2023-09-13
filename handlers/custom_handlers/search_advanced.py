@@ -113,7 +113,7 @@ async def process_name(message: types.Message, state: FSMContext):
 		else:
 			await state.finish()
 		await message.answer(text='Не нашли что искали? Повторите поиск', reply_markup=keyboard)
-	except Exeption as Ex:
+	except Exception as Ex:
 		logging.error(Ex, exc_info=True)
 		await message.answer('Что-то пошло не так, повторите попытку позже')
 

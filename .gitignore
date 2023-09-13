@@ -133,3 +133,6 @@ dmypy.json
 
 #Databases
 history.db
+
+#logs
+py_log.log

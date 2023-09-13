@@ -10,6 +10,7 @@ from keyboards.inline.search import search_kb
 from keyboards.inline.search_again import keyboard
 from loader import dp, bot
 from states.states import Search
+import logging
 
 
 @dp.message_handler(commands=['search'], state=None)

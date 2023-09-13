@@ -8,6 +8,7 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 from database.database import User, Movies
 
 
+
 @dp.message_handler(commands=['random'])
 async def random_movie_command(message: types.Message, *callback_user_data):
 	"""
@@ -52,7 +53,7 @@ async def random_movie_command(message: types.Message, *callback_user_data):
 		except:
 			pass
 		await message.answer_photo(poster, caption=movie_descr, reply_markup=keyboard)
-	except Exeption as Ex:
+	except Exception as Ex:
 		logging.error(Ex, exc_info=True)
 		await message.answer('Что-то пошло не так, попробуйте снова позже')
 

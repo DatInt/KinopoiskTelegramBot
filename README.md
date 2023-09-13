@@ -25,6 +25,10 @@ KinopoiskBot - бот для мессенджера Telegram, написанны
 Бот запускается с помощью клонирования репозитория и установки необходимых библиотек (pip install -r requirements.txt).
 API_KEY Кинопоиска и TELEGRAM_BOT_KEY прописываются в файле .env
 
+Для запуска в дркере выполнить команды:
+`docker compose build`
+`docker compose up`
+
 ###Автор:
 Маслюк Максим 2023
 
